@@ -1,0 +1,18 @@
+[
+  {
+    "email": "test@demo.com",
+    "password": "Test@1234",
+    "firstName": "Amir",
+    "lastName": "Hossain",
+    "location": "Ocean",
+    "role": "CANDIDATE"
+  },
+  {
+    "email": "test@recruiter.com",
+    "password": "Test@1234",
+    "firstName": "Recruiter",
+    "lastName": "Demo One",
+    "location": "Internet",
+    "role": "RECRUITER"
+  }
+]
