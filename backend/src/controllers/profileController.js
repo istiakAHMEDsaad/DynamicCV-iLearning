@@ -26,7 +26,7 @@ export const getMyProfile = async (req, res) => {
   }
 };
 
-export const updateMe = async (req, res) => {
+export const updateProfile = async (req, res) => {
   const { firstName, lastName, location, photoUrl, version } = req.body;
 
   try {
