@@ -150,10 +150,10 @@ export const upsertAttributeValue = async (req, res) => {
   }
 };
 
-// 4. DELETE 'INFO' ATTRIBUTE VALUE
 export const deleteAttributeValue = async (req, res) => {
+  const { attributeId } = req.params;
+
   try {
-    const { attributeId } = req.params;
     const profile = await prisma.profile.findUnique({
       where: { userId: req.user.userId },
     });
