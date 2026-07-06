@@ -1,4 +1,4 @@
-import prisma from "../config/prisma.js";
+import prisma from "../configs/prisma.js";
 
 const evaluateRequirement = (requirement, profileValue) => {
   if (!profileValue) return false;
@@ -40,9 +40,9 @@ const evaluateRequirement = (requirement, profileValue) => {
 };
 
 export const createCV = async (req, res) => {
+  const { positionId } = req.params;
+  
   try {
-    const { positionId } = req.params;
-
     const profile = await prisma.profile.findUnique({
       where: { userId: req.user.userId },
       include: { attributeValues: true },
@@ -116,9 +116,9 @@ export const getMyCVs = async (req, res) => {
 };
 
 export const getPositionCVs = async (req, res) => {
-  try {
-    const { positionId } = req.params;
+  const { positionId } = req.params;
 
+  try {
     const cvs = await prisma.cV.findMany({
       where: { positionId },
       include: {
@@ -141,16 +141,15 @@ export const getPositionCVs = async (req, res) => {
 };
 
 export const toggleLike = async (req, res) => {
-  try {
-    const { cvId } = req.params;
-    const recruiterId = req.user.userId;
+  const { cvId } = req.params;
+  const recruiterId = req.user.userId;
 
+  try {
     const existingLike = await prisma.like.findUnique({
       where: { cvId_recruiterId: { cvId, recruiterId } },
     });
 
     if (existingLike) {
-      // Remove like if it already exists
       await prisma.like.delete({ where: { id: existingLike.id } });
       return res
         .status(200)
@@ -168,8 +167,9 @@ export const toggleLike = async (req, res) => {
 };
 
 export const deleteCV = async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
     await prisma.cV.delete({ where: { id } });
     return res.status(200).json({ success: true, message: "CV deleted." });
   } catch (error) {
