@@ -27,7 +27,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const res = api.post("/auth/login", { email, password });
+    const res = await api.post("/auth/login", { email, password });
     setUser(res.data.user);
     toast.success("Welcome back!");
     return res.data.user;

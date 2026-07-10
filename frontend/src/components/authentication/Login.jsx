@@ -1,20 +1,20 @@
-import { useAuth } from "@/contexts/AuthContext";
-import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate, useLocation, Link } from "react-router";
+import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
-import { Link, useLocation, useNavigate } from "react-router";
-import { Button } from "../ui/button";
+import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+} from "@/components/ui/card";
 
-const Login = () => {
+export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,39 +38,51 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 p-4">
-      <Card className="w-full max-w-md shadow-xl border-0">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950 p-4 transition-colors duration-300">
+      <Card className="w-full max-w-md shadow-xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold tracking-tight">
+          <CardTitle className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
             Welcome back
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-zinc-500 dark:text-zinc-400">
             Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="dark:text-zinc-300">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100 h-10"
               />
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="dark:text-zinc-300">
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100 h-10"
               />
             </div>
-            <Button className="w-full" type="submit" disabled={isSubmitting}>
+            <Button
+              className="w-full dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 h-12"
+              type="submit"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
@@ -78,11 +90,12 @@ const Login = () => {
               )}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm text-zinc-500">
+
+          <div className="mt-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
             Don't have an account?{" "}
             <Link
               to="/register"
-              className="text-zinc-900 font-medium underline hover:text-zinc-700"
+              className="text-zinc-900 dark:text-zinc-100 font-medium underline hover:text-zinc-700 dark:hover:text-zinc-300"
             >
               Register here
             </Link>
@@ -91,6 +104,4 @@ const Login = () => {
       </Card>
     </div>
   );
-};
-
-export default Login;
+}

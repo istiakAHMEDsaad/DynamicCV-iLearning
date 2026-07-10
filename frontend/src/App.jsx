@@ -18,7 +18,7 @@ function App() {
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <AuthProvider>
           <Routes>
-            {/* Public / Guest Routes */}
+            {/* guest routes */}
             <Route element={<GuestRoute />}>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
@@ -26,7 +26,7 @@ function App() {
 
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-            {/* Protected Area wrapping the DashboardLayout component */}
+            {/* protected area */}
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<Overview />} />
