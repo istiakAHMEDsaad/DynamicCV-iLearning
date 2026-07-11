@@ -66,9 +66,10 @@ export default function Register() {
                   onChange={(e) =>
                     setFormData({ ...formData, firstName: e.target.value })
                   }
-                  className="dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
+                  className="dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100 h-10"
                 />
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="lastName" className="dark:text-zinc-300">
                   Last Name
@@ -80,7 +81,7 @@ export default function Register() {
                   onChange={(e) =>
                     setFormData({ ...formData, lastName: e.target.value })
                   }
-                  className="dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
+                  className="dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100 h-10"
                 />
               </div>
             </div>
@@ -96,7 +97,7 @@ export default function Register() {
                 onChange={(e) =>
                   setFormData({ ...formData, location: e.target.value })
                 }
-                className="dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
+                className="dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100 h-10"
               />
             </div>
 
@@ -112,7 +113,7 @@ export default function Register() {
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
-                className="dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
+                className="dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100 h-10"
               />
             </div>
 
@@ -128,11 +129,10 @@ export default function Register() {
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                className="dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
+                className="dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100 h-10"
               />
             </div>
 
-            {/* Quick role selector for testing purposes */}
             <div className="space-y-2">
               <Label htmlFor="role" className="dark:text-zinc-300">
                 Account Type
@@ -143,7 +143,7 @@ export default function Register() {
                 onChange={(e) =>
                   setFormData({ ...formData, role: e.target.value })
                 }
-                className="flex h-9 w-full items-center justify-between rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:ring-offset-zinc-950 dark:focus:ring-zinc-300"
+                className="flex h-10 w-full items-center justify-between rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:ring-offset-zinc-950 dark:focus:ring-zinc-300"
               >
                 <option value="CANDIDATE" className="dark:bg-zinc-900">
                   Candidate
@@ -155,7 +155,7 @@ export default function Register() {
             </div>
 
             <Button
-              className="w-full mt-6 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className="w-full mt-6 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 h-10"
               type="submit"
               disabled={isSubmitting}
             >
