@@ -61,9 +61,9 @@ model Profile {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  location  String
-  photoUrl  String?
-  version   Int     @default(1)
+  location String
+  photoUrl String?
+  version  Int     @default(1)
 
   attributeValues ProfileAttributeValue[]
   projects        Project[]
@@ -78,6 +78,7 @@ model Attribute {
   options   String[]
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+  version   Int           @default(1)
 
   profileValues        ProfileAttributeValue[]
   positionRequirements PositionRequirement[]

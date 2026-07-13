@@ -3,13 +3,13 @@ import prisma from "../configs/prisma.js";
 // create attribute
 export const createAttribute = async (req, res) => {
   const { name, category, type, options } = req.body;
+
   try {
     if (!name || !category || !type) {
       return res
         .status(400)
         .json({ error: "Name, category, and type are required." });
     }
-
     if (
       type === "DROPDOWN" &&
       (!Array.isArray(options) || options.length === 0)
@@ -19,8 +19,8 @@ export const createAttribute = async (req, res) => {
         .json({ error: "Dropdown attributes require an array of options." });
     }
 
+    // check for duplicate names to ensure global uniqueness
     const existingAttr = await prisma.attribute.findUnique({ where: { name } });
-
     if (existingAttr) {
       return res
         .status(400)
@@ -87,14 +87,13 @@ export const updateAttribute = async (req, res) => {
     if (currentAttribute.version !== version) {
       return res.status(409).json({
         error:
-          "Conflict! The attribute was modified by another user. Please refresh and try again.",
+          "Conflict: The attribute was modified by another user. Please refresh and try again.",
         currentVersion: currentAttribute.version,
       });
     }
 
     const finalOptions =
       type === "DROPDOWN" ? options || currentAttribute.options : [];
-
     if (
       type === "DROPDOWN" &&
       (!Array.isArray(finalOptions) || finalOptions.length === 0)
@@ -117,7 +116,7 @@ export const updateAttribute = async (req, res) => {
 
     return res.status(200).json({ success: true, attribute: updatedAttribute });
   } catch (error) {
-    // prisma unique constraint error code P2002
+    // handle prisma unique constraint error (code P2002)
     if (error.code === "P2002") {
       return res
         .status(400)
@@ -131,9 +130,9 @@ export const updateAttribute = async (req, res) => {
 // delete attribute
 export const deleteAttribute = async (req, res) => {
   const { id } = req.params;
+
   try {
     const attribute = await prisma.attribute.findUnique({ where: { id } });
-    
     if (!attribute) {
       return res.status(404).json({ error: "Attribute not found." });
     }

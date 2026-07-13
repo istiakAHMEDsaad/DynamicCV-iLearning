@@ -41,7 +41,7 @@ const evaluateRequirement = (requirement, profileValue) => {
 
 export const createCV = async (req, res) => {
   const { positionId } = req.params;
-  
+
   try {
     const profile = await prisma.profile.findUnique({
       where: { userId: req.user.userId },
@@ -83,7 +83,6 @@ export const createCV = async (req, res) => {
       message: "CV Generated Successfully!",
     });
   } catch (error) {
-    // handle Prisma unique constraint error = Candidate already generated CV for this position
     if (error.code === "P2002") {
       return res
         .status(400)
@@ -155,7 +154,6 @@ export const toggleLike = async (req, res) => {
         .status(200)
         .json({ success: true, message: "Like removed.", isLiked: false });
     } else {
-      // Add like
       await prisma.like.create({ data: { cvId, recruiterId } });
       return res
         .status(201)

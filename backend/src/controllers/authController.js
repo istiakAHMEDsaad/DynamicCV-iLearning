@@ -124,7 +124,6 @@ export const logout = (req, res) => {
   return res.status(200).json({ message: "Logged out successfully." });
 };
 
-
 // get user info
 export const getUser = async (req, res) => {
   try {
@@ -143,7 +142,7 @@ export const getUser = async (req, res) => {
 
     return res.status(200).json({ success: true, user: userInfo });
   } catch (error) {
-    console.error("get user error:", error);
+    console.error("get user info error:", error);
     return res
       .status(500)
       .json({ error: "Internal server error fetching profile." });

@@ -11,6 +11,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./lib/theme-provider";
 import Overview from "./pages/dashboard/Overview";
 import PlaceholderPage from "./pages/dashboard/PlaceholderPage";
+import Attributes from "./pages/dashboard/Attributes";
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
                 <Route element={<RoleRoute allowedRoles={["RECRUITER"]} />}>
                   <Route
                     path="attributes"
-                    element={<PlaceholderPage title="Attribute Library" />}
+                    element={<Attributes title="Attribute Library" />}
                   />
                 </Route>
 

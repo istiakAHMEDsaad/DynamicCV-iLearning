@@ -12,7 +12,6 @@ export const createPosition = async (req, res) => {
         .json({ error: "Title and description are required." });
     }
 
-    // nested writes to create position and requirements simultaneously
     const newPosition = await prisma.position.create({
       data: {
         title,
@@ -128,9 +127,9 @@ export const updatePosition = async (req, res) => {
 };
 
 export const deletePosition = async (req, res) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
+
     await prisma.position.delete({ where: { id } });
 
     return res
@@ -146,16 +145,16 @@ export const deletePosition = async (req, res) => {
 
 // duplicate a position
 export const duplicatePosition = async (req, res) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
+
     const existingPosition = await prisma.position.findUnique({
       where: { id },
       include: { requirements: true },
     });
 
     if (!existingPosition) {
-      return res.status(404).json({ error: "Position not found." });
+      return res.status(404).json({ error: "Original position not found." });
     }
 
     const clonedPosition = await prisma.position.create({
