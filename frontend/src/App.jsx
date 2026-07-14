@@ -12,6 +12,7 @@ import { ThemeProvider } from "./lib/theme-provider";
 import Overview from "./pages/dashboard/Overview";
 import PlaceholderPage from "./pages/dashboard/PlaceholderPage";
 import Attributes from "./pages/dashboard/Attributes";
+import Positions from "./pages/dashboard/Positions";
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
                 <Route index element={<Overview />} />
                 <Route
                   path="positions"
-                  element={<PlaceholderPage title="Positions & Templates" />}
+                  element={<Positions title="Positions & Templates" />}
                 />
 
                 <Route element={<RoleRoute allowedRoles={["RECRUITER"]} />}>
