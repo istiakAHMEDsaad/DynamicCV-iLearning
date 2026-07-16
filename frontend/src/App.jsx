@@ -13,6 +13,7 @@ import Overview from "./pages/dashboard/Overview";
 import PlaceholderPage from "./pages/dashboard/PlaceholderPage";
 import Attributes from "./pages/dashboard/Attributes";
 import Positions from "./pages/dashboard/Positions";
+import Profile from "./pages/dashboard/Profile";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<Overview />} />
+
                 <Route
                   path="positions"
                   element={<Positions title="Positions & Templates" />}
@@ -47,7 +49,7 @@ function App() {
                 <Route element={<RoleRoute allowedRoles={["CANDIDATE"]} />}>
                   <Route
                     path="profile"
-                    element={<PlaceholderPage title="Candidate Profile" />}
+                    element={<Profile title="Candidate Profile" />}
                   />
                 </Route>
               </Route>
