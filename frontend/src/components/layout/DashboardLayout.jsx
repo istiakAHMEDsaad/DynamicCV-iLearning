@@ -36,6 +36,9 @@ export default function DashboardLayout() {
           },
         ]
       : []),
+    ...(user?.role === "CANDIDATE"
+      ? [{ path: "/dashboard/my-cvs", label: "My CVs", icon: Briefcase }]
+      : []),
     ...(user?.role !== "RECRUITER"
       ? [{ path: "/dashboard/profile", label: "My Profile", icon: UserCircle }]
       : []),
@@ -83,7 +86,6 @@ export default function DashboardLayout() {
           <div className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-2">
             Menu
           </div>
-
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -132,6 +134,7 @@ export default function DashboardLayout() {
         </div>
       </aside>
 
+      {/* main */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="h-16 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-between px-4 sm:px-8 shrink-0">
           <div className="flex items-center gap-4">

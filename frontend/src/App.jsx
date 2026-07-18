@@ -9,11 +9,12 @@ import {
 } from "./components/layout/RouteGuards";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./lib/theme-provider";
-import Overview from "./pages/dashboard/Overview";
-import PlaceholderPage from "./pages/dashboard/PlaceholderPage";
 import Attributes from "./pages/dashboard/Attributes";
+import Overview from "./pages/dashboard/Overview";
 import Positions from "./pages/dashboard/Positions";
 import Profile from "./pages/dashboard/Profile";
+import PositionView from "./components/PositionView";
+import MyCV from "./components/MyCV";
 
 function App() {
   return (
@@ -38,6 +39,10 @@ function App() {
                   path="positions"
                   element={<Positions title="Positions & Templates" />}
                 />
+                <Route
+                  path="positions/:positionId"
+                  element={<PositionView />}
+                />
 
                 <Route element={<RoleRoute allowedRoles={["RECRUITER"]} />}>
                   <Route
@@ -51,6 +56,7 @@ function App() {
                     path="profile"
                     element={<Profile title="Candidate Profile" />}
                   />
+                  <Route path="my-cvs" element={<MyCV />} />
                 </Route>
               </Route>
             </Route>
