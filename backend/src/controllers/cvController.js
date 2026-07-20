@@ -40,9 +40,9 @@ const evaluateRequirement = (requirement, profileValue) => {
 };
 
 export const createCV = async (req, res) => {
-  const { positionId } = req.params;
-
   try {
+    const { positionId } = req.params;
+
     const profile = await prisma.profile.findUnique({
       where: { userId: req.user.userId },
       include: { attributeValues: true },
@@ -80,16 +80,16 @@ export const createCV = async (req, res) => {
     return res.status(201).json({
       success: true,
       cv: newCV,
-      message: "CV Generated Successfully!",
+      message: "Applied Successfully!",
     });
   } catch (error) {
     if (error.code === "P2002") {
       return res
         .status(400)
-        .json({ error: "You have already generated a CV for this position." });
+        .json({ error: "You have already applied a document for this position." });
     }
     console.error("Create CV Error:", error);
-    return res.status(500).json({ error: "Failed to generate CV." });
+    return res.status(500).json({ error: "Failed to apply." });
   }
 };
 
@@ -102,25 +102,9 @@ export const getMyCVs = async (req, res) => {
     const cvs = await prisma.cV.findMany({
       where: { profileId: profile.id },
       include: {
-        position: { select: { title: true, description: true } },
-        likes: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return res.status(200).json({ success: true, cvs });
-  } catch (error) {
-    return res.status(500).json({ error: "Failed to fetch your CVs." });
-  }
-};
-
-export const getPositionCVs = async (req, res) => {
-  const { positionId } = req.params;
-
-  try {
-    const cvs = await prisma.cV.findMany({
-      where: { positionId },
-      include: {
+        position: {
+          include: { requirements: { include: { attribute: true } } },
+        },
         profile: {
           include: {
             user: { select: { email: true } },
@@ -135,25 +119,55 @@ export const getPositionCVs = async (req, res) => {
 
     return res.status(200).json({ success: true, cvs });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to fetch candidate CVs." });
+    return res.status(500).json({ error: "Failed to fetch your info." });
+  }
+};
+
+export const getPositionCVs = async (req, res) => {
+  try {
+    const { positionId } = req.params;
+
+    const cvs = await prisma.cV.findMany({
+      where: { positionId },
+      include: {
+        profile: {
+          include: {
+            user: { select: { email: true } },
+            attributeValues: true,
+            projects: true,
+          },
+        },
+        position: {
+          include: { requirements: { include: { attribute: true } } },
+        },
+        likes: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return res.status(200).json({ success: true, cvs });
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to fetch candidate info." });
   }
 };
 
 export const toggleLike = async (req, res) => {
-  const { cvId } = req.params;
-  const recruiterId = req.user.userId;
-
   try {
+    const { cvId } = req.params;
+    const recruiterId = req.user.userId;
+
     const existingLike = await prisma.like.findUnique({
       where: { cvId_recruiterId: { cvId, recruiterId } },
     });
 
     if (existingLike) {
+      // Remove like if it already exists
       await prisma.like.delete({ where: { id: existingLike.id } });
       return res
         .status(200)
         .json({ success: true, message: "Like removed.", isLiked: false });
     } else {
+      // Add like
       await prisma.like.create({ data: { cvId, recruiterId } });
       return res
         .status(201)
@@ -165,12 +179,11 @@ export const toggleLike = async (req, res) => {
 };
 
 export const deleteCV = async (req, res) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     await prisma.cV.delete({ where: { id } });
-    return res.status(200).json({ success: true, message: "CV deleted." });
+    return res.status(200).json({ success: true, message: "Info deleted." });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to delete CV." });
+    return res.status(500).json({ error: "Failed to delete Info." });
   }
 };

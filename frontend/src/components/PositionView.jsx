@@ -27,7 +27,7 @@ import {
   FileText,
   Loader2,
   Send,
-  ThumbsUp
+  ThumbsUp,
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -142,14 +142,14 @@ function PositionView() {
               ) : (
                 <FileText className="h-4 w-4 mr-2" />
               )}
-              Generate & Apply with CV
+              Apply
             </Button>
           </div>
         )}
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 dark:bg-zinc-900">
+        <TabsList className="grid w-full grid-cols-3 dark:bg-zinc-900 h-10!">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="discussions">
             Discussions ({discussions.length})
@@ -170,11 +170,11 @@ function PositionView() {
 
             <div className="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-800">
               <h3 className="text-lg font-medium mb-4 dark:text-zinc-100">
-                Access Rules & Required Attributes
+                Required Attributes
               </h3>
               {position.requirements.length === 0 ? (
                 <p className="text-sm text-zinc-500 italic">
-                  This position is public. No specific attributes required.
+                  This position is public, No specific attributes required.
                 </p>
               ) : (
                 <ul className="space-y-2">
@@ -185,9 +185,9 @@ function PositionView() {
                     >
                       <span className="font-semibold">
                         {req.attribute?.name}
-                      </span>{" "}
-                      must be
-                      <Badge className="mx-1">{req.operator}</Badge> {req.value}
+                      </span>
+                      must be {req.operator === "GT" ? "greater than" : ""}{" "}
+                      {req.value}
                     </li>
                   ))}
                 </ul>
@@ -271,7 +271,7 @@ function PositionView() {
                             )
                           }
                         >
-                          <Eye className="h-4 w-4 mr-2" /> View CV Document
+                          <Eye className="h-4 w-4 mr-2" /> View Document
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0 border-none bg-transparent shadow-none">

@@ -143,7 +143,7 @@ function ProjectsSection({ projects }) {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium dark:text-zinc-300">
-                  Description (Markdown)
+                  Description
                 </label>
                 <Textarea
                   required

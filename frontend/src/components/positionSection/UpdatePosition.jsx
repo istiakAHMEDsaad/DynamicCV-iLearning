@@ -164,7 +164,7 @@ function UpdatePosition({
 
           <Button
             type="submit"
-            className="w-full mt-4 dark:bg-zinc-50 dark:text-zinc-900"
+            className="w-full mt-4 dark:bg-zinc-50 dark:text-zinc-900 h-10"
             disabled={editPosition.isPending}
           >
             {editPosition.isPending ? (

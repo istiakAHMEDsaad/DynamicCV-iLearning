@@ -1,20 +1,5 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/axios";
-import { useAuth } from "@/contexts/AuthContext";
-import toast from "react-hot-toast";
-import { Loader2, Plus, Trash2, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +8,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useAuth } from "@/contexts/AuthContext";
+import { api } from "@/lib/axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Edit2, Loader2, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Attributes() {
   const { user } = useAuth();
@@ -225,7 +225,7 @@ export default function Attributes() {
               <Plus className="h-4 w-4 mr-2" /> New Attribute
             </Button>
           </DialogTrigger>
-          
+
           <DialogContent className="sm:max-w-[425px] dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-50">
             <DialogHeader>
               <DialogTitle>Create Attribute</DialogTitle>
@@ -268,11 +268,16 @@ export default function Attributes() {
                   }
                 >
                   <option value="STRING">Short Text</option>
+                  <option value="TEXT">Long Text</option>
+                  <option value="NUMERIC">Numeric</option>
+                  <option value="BOOLEAN">Boolean</option>
+                  <option value="DATE">Date</option>
+                  {/* <option value="STRING">Short Text</option>
                   <option value="TEXT">Markdown Text</option>
                   <option value="NUMERIC">Numeric</option>
                   <option value="BOOLEAN">Yes/No Checkbox</option>
                   <option value="DROPDOWN">Dropdown Menu</option>
-                  <option value="DATE">Date</option>
+                  <option value="DATE">Date</option> */}
                 </select>
               </div>
 
@@ -349,10 +354,9 @@ export default function Attributes() {
                   }
                 >
                   <option value="STRING">Short Text</option>
-                  <option value="TEXT">Markdown Text</option>
+                  <option value="TEXT">Long Text</option>
                   <option value="NUMERIC">Numeric</option>
-                  <option value="BOOLEAN">Yes/No Checkbox</option>
-                  <option value="DROPDOWN">Dropdown Menu</option>
+                  <option value="BOOLEAN">Boolean</option>
                   <option value="DATE">Date</option>
                 </select>
               </div>
@@ -410,6 +414,7 @@ export default function Attributes() {
               <TableHead>Version</TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {attributes.length === 0 ? (
               <TableRow>
