@@ -15,6 +15,7 @@ import Positions from "./pages/dashboard/Positions";
 import Profile from "./pages/dashboard/Profile";
 import PositionView from "./components/PositionView";
 import MyCV from "./components/MyCV";
+import Users from "./pages/Users";
 
 function App() {
   return (
@@ -49,6 +50,10 @@ function App() {
                     path="attributes"
                     element={<Attributes title="Attribute Library" />}
                   />
+                </Route>
+
+                <Route element={<RoleRoute allowedRoles={["ADMIN"]} />}>
+                  <Route path="users" element={<Users />} />
                 </Route>
 
                 <Route element={<RoleRoute allowedRoles={["CANDIDATE"]} />}>

@@ -10,6 +10,7 @@ import {
   Moon,
   Sun,
   UserCircle,
+  UserCog,
   X,
 } from "lucide-react";
 import { useState } from "react";
@@ -41,6 +42,9 @@ export default function DashboardLayout() {
       : []),
     ...(user?.role !== "RECRUITER"
       ? [{ path: "/dashboard/profile", label: "My Profile", icon: UserCircle }]
+      : []),
+    ...(user?.role === "ADMIN"
+      ? [{ path: "/dashboard/users", label: "User Management", icon: UserCog }]
       : []),
   ];
 
@@ -113,7 +117,7 @@ export default function DashboardLayout() {
         <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 space-y-2">
           <Button
             variant="outline"
-            className="w-full justify-start text-zinc-600 dark:text-zinc-400 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 h-10"
+            className="w-full justify-start text-zinc-600 dark:text-zinc-400 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >
             {theme === "dark" ? (
@@ -126,7 +130,7 @@ export default function DashboardLayout() {
 
           <Button
             variant="outline"
-            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 dark:border-zinc-700 h-10"
+            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 dark:border-zinc-700"
             onClick={handleLogout}
           >
             <LogOut className="h-4 w-4 mr-2" /> Sign out
@@ -134,7 +138,6 @@ export default function DashboardLayout() {
         </div>
       </aside>
 
-      {/* main */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="h-16 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-between px-4 sm:px-8 shrink-0">
           <div className="flex items-center gap-4">
