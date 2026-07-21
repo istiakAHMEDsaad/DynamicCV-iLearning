@@ -10,6 +10,7 @@ import profileRoutes from "./routes/profileRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import { ENV } from "./utils/env.js";
+import statsRoutes from "./routes/statsRoutes.js";
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/cvs", cvRoutes);
 app.use("/api/discussions", discussionRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/stats", statsRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({

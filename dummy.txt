@@ -4,6 +4,9 @@ Candi@1234
 test@recruiter.com
 Test@1234
 
+admin@admin.doodle.com
+Admin@1234
+
 
 import prisma from "../configs/prisma.js";
 
