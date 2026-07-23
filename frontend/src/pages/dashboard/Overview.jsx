@@ -26,7 +26,7 @@ export default function Overview() {
   const { user } = useAuth();
   const isCandidate = user?.role === "CANDIDATE";
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["overviewStats"],
     queryFn: async () => {
       const res = await api.get("/stats/overview");
@@ -42,7 +42,15 @@ export default function Overview() {
     );
   }
 
-  const { stats, latestPositions, popularPositions, tagCloud } = data;
+  if (isError || !data) {
+    return (
+      <div className="flex justify-center items-center h-64 text-red-500">
+        <p>Failed to load dashboard data. Please try logging in again.</p>
+      </div>
+    );
+  }
+
+  const { stats, latestPositions, popularPositions, tagCloud } = data || {};
 
   return (
     <div className="space-y-8">
