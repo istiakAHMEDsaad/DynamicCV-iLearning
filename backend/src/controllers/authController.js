@@ -120,8 +120,14 @@ export const login = async (req, res) => {
 
 // logout
 export const logout = (req, res) => {
-  res.clearCookie("token");
-  return res.status(200).json({ message: "Logged out successfully." });
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
+  return res
+    .status(200)
+    .json({ success: true, message: "Logged out successfully." });
 };
 
 // get user info
@@ -137,12 +143,11 @@ export const getUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
+    const { password, ...safeUser } = user;
 
-    const { password, ...userInfo } = user;
-
-    return res.status(200).json({ success: true, user: userInfo });
+    return res.status(200).json({ success: true, user: safeUser });
   } catch (error) {
-    console.error("get user info error:", error);
+    console.error("GetMe Error:", error);
     return res
       .status(500)
       .json({ error: "Internal server error fetching profile." });

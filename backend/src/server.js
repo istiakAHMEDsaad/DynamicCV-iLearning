@@ -15,7 +15,17 @@ import statsRoutes from "./routes/statsRoutes.js";
 const app = express();
 
 // app.use(cors({ origin: ENV.FRONTEND_URL, credentials: true }));
-app.use(cors({ origin: true, credentials: true }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://dynamiccvlearningbackend.netlify.app",
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 app.use(express.json());
 app.use(cookieParser());
 
