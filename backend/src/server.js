@@ -13,8 +13,9 @@ import { ENV } from "./utils/env.js";
 import statsRoutes from "./routes/statsRoutes.js";
 
 const app = express();
+const PORT = process.env.PORT || 5000;
+app.set("trust proxy", 1);
 
-// app.use(cors({ origin: ENV.FRONTEND_URL, credentials: true }));
 app.use(
   cors({
     origin: [
@@ -26,6 +27,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -47,6 +49,6 @@ app.get("/", (req, res) => {
   });
 });
 
-app.listen(ENV.PORT, () => {
-  console.log(`Server is running on http://localhost:${ENV.PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${ENV}`);
 });
