@@ -88,6 +88,7 @@ export default function Overview() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
+        {/* latest */}
         <Card className="dark:bg-zinc-900 dark:border-zinc-800 shadow-sm">
           <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800">
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -100,10 +101,12 @@ export default function Overview() {
               <TableHeader className="bg-zinc-50 dark:bg-zinc-900/50">
                 <TableRow>
                   <TableHead>Position Title</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  {!isCandidate && (
+                    <TableHead className="text-right">Action</TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
-              
+
               <TableBody>
                 {latestPositions.map((pos) => (
                   <TableRow key={pos.id} className="dark:border-zinc-800">
@@ -113,14 +116,17 @@ export default function Overview() {
                         Updated {new Date(pos.updatedAt).toLocaleDateString()}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <Link
-                        to={`/dashboard/positions/${pos.id}`}
-                        className="text-sm font-medium text-primary hover:underline inline-flex items-center"
-                      >
-                        View <ArrowRight className="ml-1 h-3 w-3" />
-                      </Link>
-                    </TableCell>
+
+                    {!isCandidate && (
+                      <TableCell className="text-right">
+                        <Link
+                          to={`/dashboard/positions/${pos.id}`}
+                          className="text-sm font-medium text-primary hover:underline inline-flex items-center"
+                        >
+                          View <ArrowRight className="ml-1 h-3 w-3" />
+                        </Link>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
@@ -128,6 +134,7 @@ export default function Overview() {
           </CardContent>
         </Card>
 
+        {/* popular */}
         <Card className="dark:bg-zinc-900 dark:border-zinc-800 shadow-sm">
           <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800">
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -135,13 +142,16 @@ export default function Overview() {
               Positions
             </CardTitle>
           </CardHeader>
+
           <CardContent className="p-0">
             <Table>
               <TableHeader className="bg-zinc-50 dark:bg-zinc-900/50">
                 <TableRow>
                   <TableHead>Position Title</TableHead>
                   <TableHead className="text-center">CVs Submitted</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  {!isCandidate && (
+                    <TableHead className="text-right">Action</TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
 
@@ -156,14 +166,15 @@ export default function Overview() {
                         {pos._count.cvs} CVs
                       </span>
                     </TableCell>
-                    <TableCell className="text-right">
+
+                    {!isCandidate && <TableCell className="text-right">
                       <Link
                         to={`/dashboard/positions/${pos.id}`}
                         className="text-sm font-medium text-primary hover:underline inline-flex items-center"
                       >
                         View <ArrowRight className="ml-1 h-3 w-3" />
                       </Link>
-                    </TableCell>
+                    </TableCell>}
                   </TableRow>
                 ))}
               </TableBody>
@@ -172,6 +183,7 @@ export default function Overview() {
         </Card>
       </div>
 
+      {/* tag */}
       <Card className="dark:bg-zinc-900 dark:border-zinc-800 shadow-sm">
         <CardHeader>
           <CardTitle className="text-lg font-semibold flex items-center gap-2">

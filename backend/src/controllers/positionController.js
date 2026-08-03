@@ -40,13 +40,26 @@ export const createPosition = async (req, res) => {
 
 // get all position
 export const getAllPositions = async (req, res) => {
+  const { search } = req.query;
+
   try {
+    const filter = search
+      ? {
+          OR: [
+            { title: { contains: search, mode: "insensitive" } },
+            { description: { contains: search, mode: "insensitive" } },
+          ],
+        }
+      : {};
+
     const positions = await prisma.position.findMany({
+      where: filter,
       include: {
         requirements: {
-          include: {
-            attribute: true,
-          },
+          include: { attribute: true },
+        },
+        _count: {
+          select: { cvs: true },
         },
       },
       orderBy: { createdAt: "desc" },

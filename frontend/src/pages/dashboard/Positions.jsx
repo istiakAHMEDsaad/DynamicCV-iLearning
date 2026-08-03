@@ -13,16 +13,28 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Copy, Edit2, ExternalLink, Loader2, Trash2 } from "lucide-react";
+import {
+  Copy,
+  Edit2,
+  ExternalLink,
+  Loader2,
+  Trash2,
+  Search,
+} from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
+import { useDebounce } from "@/hooks/useDebounce";
+import { Input } from "@/components/ui/input";
 
 export default function Positions() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedIds, setSelectedIds] = useState([]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce(searchTerm, 500);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -40,11 +52,15 @@ export default function Positions() {
   const [formData, setFormData] = useState(initialFormState);
 
   const { data: positions = [], isLoading: loadingPositions } = useQuery({
-    queryKey: ["positions"],
+    queryKey: ["positions", debouncedSearch],
     queryFn: async () => {
-      const res = await api.get("/positions");
+      const params = new URLSearchParams();
+      if (debouncedSearch) params.append("search", debouncedSearch);
+
+      const res = await api.get(`/positions?${params.toString()}`);
       return res.data.positions;
     },
+    placeholderData: (prevData) => prevData,
   });
 
   const { data: attributes = [] } = useQuery({
@@ -206,14 +222,25 @@ export default function Positions() {
         </p>
       </div>
 
-      <div className="flex items-center justify-between bg-white dark:bg-zinc-900 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-sm">
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            {selectedIds.length} selected
-          </span>
+      <div className="flex flex-col sm:flex-row gap-4 items-center bg-white dark:bg-zinc-900 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-sm">
+        {/* Search Bar */}
+        <div className="relative w-full sm:max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+          <Input
+            placeholder="Search positions..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 w-full bg-zinc-50 dark:bg-zinc-950 dark:border-zinc-800"
+          />
+        </div>
 
-          {selectedIds.length > 0 && (
-            <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-200">
+        <div className="ml-auto flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+          {selectedIds.length > 0 ? (
+            <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-200 w-full sm:w-auto justify-end">
+              <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mr-2 hidden sm:inline-block">
+                {selectedIds.length} selected
+              </span>
+
               {selectedIds.length === 1 && (
                 <Button
                   variant="default"
@@ -222,7 +249,8 @@ export default function Positions() {
                     navigate(`/dashboard/positions/${selectedIds[0]}`)
                   }
                 >
-                  <ExternalLink className="h-4 w-4 mr-2" /> Open Position
+                  <ExternalLink className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Open</span>
                 </Button>
               )}
 
@@ -236,7 +264,8 @@ export default function Positions() {
                       selectedIds.forEach((id) => deletePosition.mutate(id))
                     }
                   >
-                    <Trash2 className="h-4 w-4 mr-2" /> Delete
+                    <Trash2 className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Delete</span>
                   </Button>
 
                   {selectedIds.length === 1 && (
@@ -246,38 +275,40 @@ export default function Positions() {
                         size="sm"
                         onClick={() => duplicatePosition.mutate(selectedIds[0])}
                       >
-                        <Copy className="h-4 w-4 mr-2" /> Duplicate
+                        <Copy className="h-4 w-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Duplicate</span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={handleEditClick}
                       >
-                        <Edit2 className="h-4 w-4 mr-2" /> Edit
+                        <Edit2 className="h-4 w-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Edit</span>
                       </Button>
                     </>
                   )}
                 </>
               )}
             </div>
+          ) : (
+            isRecruiter && (
+              <NewPosition
+                isCreateModalOpen={isCreateModalOpen}
+                setIsCreateModalOpen={setIsCreateModalOpen}
+                setFormData={setFormData}
+                initialFormState={initialFormState}
+                handleSubmit={handleSubmit}
+                formData={formData}
+                handleAddRequirement={handleAddRequirement}
+                handleRequirementChange={handleRequirementChange}
+                attributes={attributes}
+                handleRemoveRequirement={handleRemoveRequirement}
+                createPosition={createPosition}
+              />
+            )
           )}
         </div>
-
-        {isRecruiter && (
-          <NewPosition
-            isCreateModalOpen={isCreateModalOpen}
-            setIsCreateModalOpen={setIsCreateModalOpen}
-            setFormData={setFormData}
-            initialFormState={initialFormState}
-            handleSubmit={handleSubmit}
-            formData={formData}
-            handleAddRequirement={handleAddRequirement}
-            handleRequirementChange={handleRequirementChange}
-            attributes={attributes}
-            handleRemoveRequirement={handleRemoveRequirement}
-            createPosition={createPosition}
-          />
-        )}
 
         {isRecruiter && (
           <UpdatePosition
@@ -315,6 +346,7 @@ export default function Positions() {
               <TableHead className="w-[80px]">Version</TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {positions.length === 0 ? (
               <TableRow>
