@@ -1,13 +1,6 @@
+import { AttributeModals } from "@/components/AttributeModals";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -17,22 +10,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useAuth } from "@/contexts/AuthContext";
+import { useDebounce } from "@/hooks/useDebounce";
 import { api } from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Edit2, Loader2, Plus, Trash2 } from "lucide-react";
+import { Edit2, Loader2, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function Attributes() {
-  const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [selectedIds, setSelectedIds] = useState([]);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce(searchTerm, 500);
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -42,51 +36,38 @@ export default function Attributes() {
   });
 
   const { data: attributes = [], isLoading } = useQuery({
-    queryKey: ["attributes"],
+    queryKey: ["attributes", debouncedSearch],
     queryFn: async () => {
-      const res = await api.get("/attributes");
+      const params = new URLSearchParams();
+      if (debouncedSearch) params.append("search", debouncedSearch);
+      const res = await api.get(`/attributes?${params.toString()}`);
       return res.data.attributes;
     },
+    placeholderData: (prevData) => prevData,
   });
 
   const createAttribute = useMutation({
-    mutationFn: async (newAttr) => {
-      return await api.post("/attributes", newAttr);
-    },
+    mutationFn: async (newAttr) => await api.post("/attributes", newAttr),
     onSuccess: () => {
       toast.success("Attribute created!");
       queryClient.invalidateQueries({ queryKey: ["attributes"] });
       setIsCreateModalOpen(false);
-      setFormData({
-        name: "",
-        category: "",
-        type: "STRING",
-        options: "",
-        version: 1,
-      });
+      resetForm();
     },
-    onError: (error) => {
-      toast.error(error.response?.data?.error || "Failed to create attribute");
-    },
+    onError: (error) =>
+      toast.error(error.response?.data?.error || "Failed to create attribute"),
   });
 
   const editAttribute = useMutation({
-    mutationFn: async ({ id, payload }) => {
-      return await api.put(`/attributes/${id}`, payload);
-    },
+    mutationFn: async ({ id, payload }) =>
+      await api.put(`/attributes/${id}`, payload),
     onSuccess: () => {
       toast.success("Attribute updated!");
       queryClient.invalidateQueries({ queryKey: ["attributes"] });
       setIsEditModalOpen(false);
       setEditingId(null);
       setSelectedIds([]);
-      setFormData({
-        name: "",
-        category: "",
-        type: "STRING",
-        options: "",
-        version: 1,
-      });
+      resetForm();
     },
     onError: (error) => {
       if (error.response?.status === 409) {
@@ -104,33 +85,32 @@ export default function Attributes() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id) => {
-      return await api.delete(`/attributes/${id}`);
-    },
+    mutationFn: async (id) => await api.delete(`/attributes/${id}`),
     onSuccess: () => {
       toast.success("Attribute deleted!");
       queryClient.invalidateQueries({ queryKey: ["attributes"] });
       setSelectedIds([]);
     },
-    onError: (error) => {
-      toast.error(error.response?.data?.error || "Failed to delete");
-    },
+    onError: (error) =>
+      toast.error(error.response?.data?.error || "Failed to delete"),
   });
 
-  const handleSelectAll = (checked) => {
-    if (checked) {
-      setSelectedIds(attributes.map((attr) => attr.id));
-    } else {
-      setSelectedIds([]);
-    }
-  };
+  const resetForm = () =>
+    setFormData({
+      name: "",
+      category: "",
+      type: "STRING",
+      options: "",
+      version: 1,
+    });
+
+  const handleSelectAll = (checked) =>
+    setSelectedIds(checked ? attributes.map((attr) => attr.id) : []);
 
   const handleSelectRow = (checked, id) => {
-    if (checked) {
-      setSelectedIds((prev) => [...prev, id]);
-    } else {
-      setSelectedIds((prev) => prev.filter((selectedId) => selectedId !== id));
-    }
+    setSelectedIds((prev) =>
+      checked ? [...prev, id] : prev.filter((sId) => sId !== id),
+    );
   };
 
   const handleEditClick = () => {
@@ -148,32 +128,22 @@ export default function Attributes() {
     }
   };
 
-  const handleEditSubmit = (e) => {
-    e.preventDefault();
-    const payload = {
-      ...formData,
-      options:
-        formData.type === "DROPDOWN"
-          ? formData.options.split(",").map((opt) => opt.trim())
-          : [],
-    };
-    editAttribute.mutate({ id: editingId, payload });
-  };
+  const processPayload = () => ({
+    ...formData,
+    options:
+      formData.type === "DROPDOWN"
+        ? formData.options.split(",").map((opt) => opt.trim())
+        : [],
+  });
 
   const handleCreateSubmit = (e) => {
     e.preventDefault();
-    const payload = {
-      ...formData,
-      options:
-        formData.type === "DROPDOWN"
-          ? formData.options.split(",").map((opt) => opt.trim())
-          : [],
-    };
-    createAttribute.mutate(payload);
+    createAttribute.mutate(processPayload());
   };
 
-  const handleDeleteSelected = () => {
-    selectedIds.forEach((id) => deleteMutation.mutate(id));
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    editAttribute.mutate({ id: editingId, payload: processPayload() });
   };
 
   if (isLoading) {
@@ -186,211 +156,58 @@ export default function Attributes() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Attribute Library
-        </h2>
-        <p className="text-zinc-500 dark:text-zinc-400">
-          Manage reusable data fields for CVs and Positions.
-        </p>
+      {/* header */}
+      <div className="flex justify-between items-start sm:items-center flex-col sm:flex-row gap-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            Attribute Library
+          </h2>
+          <p className="text-zinc-500 dark:text-zinc-400">
+            Manage reusable data fields for CVs and Positions.
+          </p>
+        </div>
+        <Button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="dark:bg-zinc-50 dark:text-zinc-900"
+        >
+          <Plus className="h-4 w-4 mr-2" /> New Attribute
+        </Button>
       </div>
 
-      <div className="flex items-center justify-between bg-white dark:bg-zinc-900 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-sm">
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            {selectedIds.length} selected
-          </span>
-          {selectedIds.length > 0 && (
-            <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-200">
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={handleDeleteSelected}
-                disabled={deleteMutation.isPending}
-              >
-                <Trash2 className="h-4 w-4 mr-2" /> Delete
-              </Button>
-              {selectedIds.length === 1 && (
-                <Button variant="outline" size="sm" onClick={handleEditClick}>
-                  <Edit2 className="h-4 w-4 mr-2" /> Edit
-                </Button>
-              )}
-            </div>
-          )}
+      <div className="flex flex-col sm:flex-row gap-4 items-center bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800">
+        <div className="relative w-full sm:max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+          <Input
+            placeholder="Search attributes..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 w-full bg-white dark:bg-zinc-950 dark:border-zinc-800"
+          />
         </div>
 
-        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-          <DialogTrigger asChild>
-            <Button className="dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
-              <Plus className="h-4 w-4 mr-2" /> New Attribute
+        {selectedIds.length > 0 && (
+          <div className="ml-auto flex items-center gap-2 animate-in fade-in zoom-in duration-200 w-full sm:w-auto justify-end">
+            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mr-2 hidden sm:inline-block">
+              {selectedIds.length} selected
+            </span>
+            {selectedIds.length === 1 && (
+              <Button variant="outline" size="sm" onClick={handleEditClick}>
+                <Edit2 className="h-4 w-4 sm:mr-2" />{" "}
+                <span className="hidden sm:inline">Edit</span>
+              </Button>
+            )}
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() =>
+                selectedIds.forEach((id) => deleteMutation.mutate(id))
+              }
+            >
+              <Trash2 className="h-4 w-4 sm:mr-2" />{" "}
+              <span className="hidden sm:inline">Delete</span>
             </Button>
-          </DialogTrigger>
-
-          <DialogContent className="sm:max-w-[425px] dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-50">
-            <DialogHeader>
-              <DialogTitle>Create Attribute</DialogTitle>
-              <DialogDescription className="dark:text-zinc-400">
-                Define a new field to be reused across positions.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleCreateSubmit} className="space-y-4 mt-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Name</label>
-                <Input
-                  required
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  placeholder="e.g. IELTS Score"
-                  className="dark:bg-zinc-900 dark:border-zinc-800"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Category</label>
-                <Input
-                  required
-                  value={formData.category}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category: e.target.value })
-                  }
-                  placeholder="e.g. Languages"
-                  className="dark:bg-zinc-900 dark:border-zinc-800"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Data Type</label>
-                <select
-                  className="flex h-9 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors dark:border-zinc-800 dark:bg-zinc-900"
-                  value={formData.type}
-                  onChange={(e) =>
-                    setFormData({ ...formData, type: e.target.value })
-                  }
-                >
-                  <option value="STRING">Short Text</option>
-                  <option value="TEXT">Long Text</option>
-                  <option value="NUMERIC">Numeric</option>
-                  <option value="BOOLEAN">Boolean</option>
-                  <option value="DATE">Date</option>
-                  {/* <option value="STRING">Short Text</option>
-                  <option value="TEXT">Markdown Text</option>
-                  <option value="NUMERIC">Numeric</option>
-                  <option value="BOOLEAN">Yes/No Checkbox</option>
-                  <option value="DROPDOWN">Dropdown Menu</option>
-                  <option value="DATE">Date</option> */}
-                </select>
-              </div>
-
-              {formData.type === "DROPDOWN" && (
-                <div className="space-y-2 animate-in slide-in-from-top-2">
-                  <label className="text-sm font-medium">
-                    Options (Comma separated)
-                  </label>
-                  <Input
-                    required
-                    value={formData.options}
-                    onChange={(e) =>
-                      setFormData({ ...formData, options: e.target.value })
-                    }
-                    placeholder="e.g. Native, Fluent, Intermediate"
-                    className="dark:bg-zinc-900 dark:border-zinc-800"
-                  />
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                className="w-full mt-4 dark:bg-zinc-50 dark:text-zinc-900"
-                disabled={createAttribute.isPending}
-              >
-                {createAttribute.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "Save Attribute"
-                )}
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-
-        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-          <DialogContent className="sm:max-w-[425px] dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-50">
-            <DialogHeader>
-              <DialogTitle>Edit Attribute</DialogTitle>
-              <DialogDescription className="dark:text-zinc-400">
-                Update the attribute definitions.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleEditSubmit} className="space-y-4 mt-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Name</label>
-                <Input
-                  required
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="dark:bg-zinc-900 dark:border-zinc-800"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Category</label>
-                <Input
-                  required
-                  value={formData.category}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category: e.target.value })
-                  }
-                  className="dark:bg-zinc-900 dark:border-zinc-800"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Data Type</label>
-                <select
-                  className="flex h-9 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors dark:border-zinc-800 dark:bg-zinc-900"
-                  value={formData.type}
-                  onChange={(e) =>
-                    setFormData({ ...formData, type: e.target.value })
-                  }
-                >
-                  <option value="STRING">Short Text</option>
-                  <option value="TEXT">Long Text</option>
-                  <option value="NUMERIC">Numeric</option>
-                  <option value="BOOLEAN">Boolean</option>
-                  <option value="DATE">Date</option>
-                </select>
-              </div>
-
-              {formData.type === "DROPDOWN" && (
-                <div className="space-y-2 animate-in slide-in-from-top-2">
-                  <label className="text-sm font-medium">
-                    Options (Comma separated)
-                  </label>
-                  <Input
-                    required
-                    value={formData.options}
-                    onChange={(e) =>
-                      setFormData({ ...formData, options: e.target.value })
-                    }
-                    className="dark:bg-zinc-900 dark:border-zinc-800"
-                  />
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                className="w-full mt-4 dark:bg-zinc-50 dark:text-zinc-900"
-                disabled={editAttribute.isPending}
-              >
-                {editAttribute.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "Update Attribute"
-                )}
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+          </div>
+        )}
       </div>
 
       {/* table */}
@@ -422,14 +239,14 @@ export default function Attributes() {
                   colSpan={5}
                   className="text-center h-24 text-zinc-500"
                 >
-                  No attributes found in the library.
+                  No attributes found!
                 </TableCell>
               </TableRow>
             ) : (
               attributes.map((attr) => (
                 <TableRow
                   key={attr.id}
-                  className="dark:border-zinc-800 dark:hover:bg-zinc-800/50 transition-colors"
+                  className="dark:border-zinc-800 dark:hover:bg-zinc-800/50"
                 >
                   <TableCell className="text-center">
                     <Checkbox
@@ -460,6 +277,19 @@ export default function Attributes() {
           </TableBody>
         </Table>
       </div>
+
+      <AttributeModals
+        isCreateOpen={isCreateModalOpen}
+        setIsCreateOpen={setIsCreateModalOpen}
+        isEditOpen={isEditModalOpen}
+        setIsEditOpen={setIsEditModalOpen}
+        formData={formData}
+        setFormData={setFormData}
+        handleCreateSubmit={handleCreateSubmit}
+        handleEditSubmit={handleEditSubmit}
+        createPending={createAttribute.isPending}
+        editPending={editAttribute.isPending}
+      />
     </div>
   );
 }

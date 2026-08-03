@@ -50,7 +50,7 @@ export const getAllAttributes = async (req, res) => {
   try {
     const filter = {};
     if (category) filter.category = category;
-    // if (search) filter.name = { contains: search, mode: "insensitive" };
+    if (search) filter.name = { contains: search, mode: "insensitive" };
 
     const attributes = await prisma.attribute.findMany({
       where: filter,

@@ -94,6 +94,7 @@ export default function Overview() {
               <Briefcase className="h-5 w-5 text-zinc-500" /> Latest Positions
             </CardTitle>
           </CardHeader>
+
           <CardContent className="p-0">
             <Table>
               <TableHeader className="bg-zinc-50 dark:bg-zinc-900/50">
@@ -102,6 +103,7 @@ export default function Overview() {
                   <TableHead className="text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
+              
               <TableBody>
                 {latestPositions.map((pos) => (
                   <TableRow key={pos.id} className="dark:border-zinc-800">
