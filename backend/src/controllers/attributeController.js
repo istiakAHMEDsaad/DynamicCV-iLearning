@@ -10,14 +10,14 @@ export const createAttribute = async (req, res) => {
         .status(400)
         .json({ error: "Name, category, and type are required." });
     }
-    if (
-      type === "DROPDOWN" &&
-      (!Array.isArray(options) || options.length === 0)
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Dropdown attributes require an array of options." });
-    }
+    // if (
+    //   type === "DROPDOWN" &&
+    //   (!Array.isArray(options) || options.length === 0)
+    // ) {
+    //   return res
+    //     .status(400)
+    //     .json({ error: "Dropdown attributes require an array of options." });
+    // }
 
     // check for duplicate names to ensure global uniqueness
     const existingAttr = await prisma.attribute.findUnique({ where: { name } });
@@ -32,7 +32,7 @@ export const createAttribute = async (req, res) => {
         name,
         category,
         type,
-        options: type === "DROPDOWN" ? options : [],
+        // options: type === "DROPDOWN" ? options : [],
       },
     });
 
@@ -50,7 +50,7 @@ export const getAllAttributes = async (req, res) => {
   try {
     const filter = {};
     if (category) filter.category = category;
-    if (search) filter.name = { contains: search, mode: "insensitive" };
+    // if (search) filter.name = { contains: search, mode: "insensitive" };
 
     const attributes = await prisma.attribute.findMany({
       where: filter,
@@ -92,16 +92,16 @@ export const updateAttribute = async (req, res) => {
       });
     }
 
-    const finalOptions =
-      type === "DROPDOWN" ? options || currentAttribute.options : [];
-    if (
-      type === "DROPDOWN" &&
-      (!Array.isArray(finalOptions) || finalOptions.length === 0)
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Dropdown attributes require an array of options." });
-    }
+    // const finalOptions =
+    //   type === "DROPDOWN" ? options || currentAttribute.options : [];
+    // if (
+    //   type === "DROPDOWN" &&
+    //   (!Array.isArray(finalOptions) || finalOptions.length === 0)
+    // ) {
+    //   return res
+    //     .status(400)
+    //     .json({ error: "Dropdown attributes require an array of options." });
+    // }
 
     const updatedAttribute = await prisma.attribute.update({
       where: { id },
@@ -109,7 +109,7 @@ export const updateAttribute = async (req, res) => {
         name: name || currentAttribute.name,
         category: category || currentAttribute.category,
         type: type || currentAttribute.type,
-        options: finalOptions,
+        // options: finalOptions,
         version: currentAttribute.version + 1,
       },
     });
@@ -133,6 +133,7 @@ export const deleteAttribute = async (req, res) => {
 
   try {
     const attribute = await prisma.attribute.findUnique({ where: { id } });
+    
     if (!attribute) {
       return res.status(404).json({ error: "Attribute not found." });
     }

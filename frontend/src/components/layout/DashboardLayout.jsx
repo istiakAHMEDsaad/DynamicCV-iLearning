@@ -27,6 +27,7 @@ export default function DashboardLayout() {
 
   const navItems = [
     { path: "/dashboard", label: "Overview", icon: LayoutDashboard },
+    
     { path: "/dashboard/positions", label: "Positions", icon: Briefcase },
     ...(user?.role !== "CANDIDATE"
       ? [

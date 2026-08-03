@@ -27,7 +27,6 @@ enum AttributeType {
   DATE
   PERIOD
   BOOLEAN
-  DROPDOWN
 }
 
 enum Operator {

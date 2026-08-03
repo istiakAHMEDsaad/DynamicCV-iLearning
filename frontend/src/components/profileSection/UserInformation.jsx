@@ -24,8 +24,10 @@ function UserInformation({ initialData }) {
 
   const updateProfile = useMutation({
     mutationFn: async (payload) => await api.put("/profile/me", payload),
+    
     onSuccess: (data) => {
       setSaveStatus("saved");
+      
       setFormData((prev) => ({ ...prev, version: data?.data.profile.version }));
       queryClient.setQueryData(["profile"], (old) => ({
         ...old,
@@ -38,6 +40,7 @@ function UserInformation({ initialData }) {
       }));
       setTimeout(() => setSaveStatus("idle"), 2000);
     },
+    
     onError: (err) => {
       setSaveStatus("error");
       if (err.response?.status === 409) {

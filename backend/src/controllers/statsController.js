@@ -5,13 +5,17 @@ export const getOverviewStats = async (req, res) => {
     const totalCandidates = await prisma.user.count({
       where: { role: "CANDIDATE" },
     });
+
     const totalRecruiters = await prisma.user.count({
       where: { role: "RECRUITER" },
     });
+
     const totalPositions = await prisma.position.count();
+
     const totalCVs = await prisma.cV.count();
 
     const yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+    
     const cvsLast24h = await prisma.cV.count({
       where: { createdAt: { gte: yesterday } },
     });

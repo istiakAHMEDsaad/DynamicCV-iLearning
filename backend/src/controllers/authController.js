@@ -63,9 +63,9 @@ export const register = async (req, res) => {
 
 // login user
 export const login = async (req, res) => {
+  const { email, password } = req.body;
+  
   try {
-    const { email, password } = req.body;
-
     if (!email || !password) {
       return res
         .status(400)
@@ -146,7 +146,7 @@ export const getUser = async (req, res) => {
 
     return res.status(200).json({ success: true, user: safeUser });
   } catch (error) {
-    console.error("GetMe Error:", error);
+    console.error("User info Error:", error);
     return res
       .status(500)
       .json({ error: "Internal server error fetching profile." });

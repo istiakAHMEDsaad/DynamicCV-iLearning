@@ -105,6 +105,7 @@ export const getMyCVs = async (req, res) => {
         position: {
           include: { requirements: { include: { attribute: true } } },
         },
+
         profile: {
           include: {
             user: { select: { email: true } },
@@ -137,6 +138,7 @@ export const getPositionCVs = async (req, res) => {
             projects: true,
           },
         },
+
         position: {
           include: { requirements: { include: { attribute: true } } },
         },
@@ -161,7 +163,6 @@ export const toggleLike = async (req, res) => {
     });
 
     if (existingLike) {
-
       await prisma.like.delete({ where: { id: existingLike.id } });
       return res
         .status(200)
