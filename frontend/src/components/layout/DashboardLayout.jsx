@@ -27,7 +27,7 @@ export default function DashboardLayout() {
 
   const navItems = [
     { path: "/dashboard", label: "Overview", icon: LayoutDashboard },
-    
+
     { path: "/dashboard/positions", label: "Positions", icon: Briefcase },
     ...(user?.role !== "CANDIDATE"
       ? [
@@ -47,6 +47,7 @@ export default function DashboardLayout() {
     ...(user?.role === "ADMIN"
       ? [{ path: "/dashboard/users", label: "User Management", icon: UserCog }]
       : []),
+      
   ];
 
   const handleLogout = async () => {

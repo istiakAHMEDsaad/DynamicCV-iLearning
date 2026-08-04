@@ -11,6 +11,7 @@ import projectRoutes from "./routes/projectRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import { ENV } from "./utils/env.js";
 import statsRoutes from "./routes/statsRoutes.js";
+import salesforceRoutes from "./routes/salesforceRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -40,6 +41,7 @@ app.use("/api/cvs", cvRoutes);
 app.use("/api/discussions", discussionRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/stats", statsRoutes);
+app.use("/api/salesforce", salesforceRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({

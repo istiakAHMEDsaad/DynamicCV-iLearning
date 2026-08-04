@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import SalesforceSync from "@/components/profileSection/SalesforceSync";
 
 export default function Profile() {
   const { data: profile, isLoading: loadingProfile } = useQuery({
@@ -37,9 +38,11 @@ export default function Profile() {
         <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
           My Profile
         </h2>
-        <p className="text-zinc-500 dark:text-zinc-400">
+        <p className="text-zinc-500 dark:text-zinc-400 mb-2">
           Manage your information, attribute, and projects.
         </p>
+
+        <SalesforceSync />
       </div>
 
       <Tabs defaultValue="me" className="w-full">
